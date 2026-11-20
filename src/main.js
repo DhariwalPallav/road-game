@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
+import { input } from './input.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
@@ -34,6 +35,9 @@ let last = performance.now();
 function frame(now) {            // 'now' is passed in by requestAnimationFrame (ms)
   const dt = Math.min((now - last) / 1000, CONFIG.maxDt); // seconds, clamped
   last = now;
+  input.update();
+  cube.position.x += input.steer * CONFIG.moveSpeed * dt;
+  cube.position.z -= input.throttle * CONFIG.moveSpeed * dt; // -z is "forward" in Three.js
 
   cube.rotation.x += CONFIG.cubeSpinSpeed * dt;
   cube.rotation.y += CONFIG.cubeSpinSpeed * dt;
