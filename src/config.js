@@ -16,5 +16,7 @@ export const CONFIG = {
   fovBase: 60,       // degrees at standstill
   fovBoost: 15,      // extra degrees at top speed
   fovSpeedMax: 8,    // speed at which the full boost applies (matches moveSpeed for now)
+
+  road: { width: 8, segmentLength: 40, segmentCount: 8, segmentsBehind: 2, y: -0.48 },
 };
 

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { input } from './input.js';
 import { updateCamera } from './cameraRig.js';
+import { createRoad } from './road.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
@@ -42,6 +43,8 @@ ground.rotation.x = -Math.PI / 2; // lay it flat
 ground.position.y = -0.5;         // the cube's bottom face sits at y = -0.5
 scene.add(ground);
 
+const road = createRoad(scene);   // NEW: build the road pool once
+
 // 4. Game loop with delta time
 let last = performance.now();
 
@@ -51,6 +54,10 @@ function frame(now) {            // 'now' is passed in by requestAnimationFrame 
   input.update();
   cube.position.x += input.steer * CONFIG.moveSpeed * dt;
   cube.position.z -= input.throttle * CONFIG.moveSpeed * dt; // -z is "forward" in Three.js
+
+  road.update(cube.position.z);         // NEW: recycle road segments
+  ground.position.x = cube.position.x;  // NEW: ground follows the cube
+  ground.position.z = cube.position.z;  // NEW
 
   cube.rotation.x += CONFIG.cubeSpinSpeed * dt;
   cube.rotation.y += CONFIG.cubeSpinSpeed * dt;
