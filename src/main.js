@@ -55,7 +55,8 @@ function frame(now) {            // 'now' is passed in by requestAnimationFrame 
   cube.rotation.x += CONFIG.cubeSpinSpeed * dt;
   cube.rotation.y += CONFIG.cubeSpinSpeed * dt;
 
-  updateCamera(camera, cube, dt);
+  const speed = Math.hypot(input.steer, input.throttle) * CONFIG.moveSpeed; // temporary
+  updateCamera(camera, cube, dt, speed);
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);

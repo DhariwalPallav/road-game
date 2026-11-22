@@ -12,5 +12,9 @@ export const CONFIG = {
   camOffsetY: 2,
   camOffsetZ: 6,
   camDamping: 5,     // higher = stiffer follow, lower = floatier
+
+  fovBase: 60,       // degrees at standstill
+  fovBoost: 15,      // extra degrees at top speed
+  fovSpeedMax: 8,    // speed at which the full boost applies (matches moveSpeed for now)
 };
 
