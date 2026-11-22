@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { input } from './input.js';
+import { updateCamera } from './cameraRig.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
@@ -53,6 +54,8 @@ function frame(now) {            // 'now' is passed in by requestAnimationFrame 
 
   cube.rotation.x += CONFIG.cubeSpinSpeed * dt;
   cube.rotation.y += CONFIG.cubeSpinSpeed * dt;
+
+  updateCamera(camera, cube, dt);
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
