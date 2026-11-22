@@ -10,7 +10,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,                                     // near clip
   1000                                     // far clip
 );
-camera.position.z = 4;
+camera.position.set(0, 2, 6);
+camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -23,11 +24,22 @@ const cube = new THREE.Mesh(
 );
 scene.add(cube);
 
-// 3. Light
+// 3. Light, sky, fog, ground
 const sun = new THREE.DirectionalLight(0xffffff, 3);
-sun.position.set(2, 3, 4);
+sun.position.set(20, 40, 10);
 scene.add(sun);
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+scene.background = new THREE.Color(CONFIG.skyColor);
+scene.fog = new THREE.Fog(CONFIG.skyColor, CONFIG.fogNear, CONFIG.fogFar);
+
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(500, 500),
+  new THREE.MeshStandardMaterial({ color: CONFIG.groundColor })
+);
+ground.rotation.x = -Math.PI / 2; // lay it flat
+ground.position.y = -0.5;         // the cube's bottom face sits at y = -0.5
+scene.add(ground);
 
 // 4. Game loop with delta time
 let last = performance.now();
