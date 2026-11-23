@@ -19,6 +19,6 @@ export const CONFIG = {
 
   road: { width: 8, segmentLength: 40, segmentCount: 8, segmentsBehind: 2, y: -0.48 },
 
-  noise: { seed: 1, frequency: 0.02 },
+  noise: { seed: 1, frequency: 0.01, octaves: 4, lacunarity: 2, gain: 0.8 },
 };
 
