@@ -20,5 +20,7 @@ export const CONFIG = {
   road: { width: 8, segmentLength: 40, segmentCount: 8, segmentsBehind: 2, y: -0.48 },
 
   noise: { seed: 1, frequency: 0.01, octaves: 4, lacunarity: 2, gain: 0.8 },
+
+  patch: { size: 100, segments: 64, heightScale: 30, x: 70, z: -60 },
 };
 

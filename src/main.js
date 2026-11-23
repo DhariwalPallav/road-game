@@ -3,6 +3,7 @@ import { CONFIG } from './config.js';
 import { input } from './input.js';
 import { updateCamera } from './cameraRig.js';
 import { createRoad } from './road.js';
+import { createTerrainPatch } from './world/terrainPatch.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
@@ -44,6 +45,7 @@ ground.position.y = -0.5;         // the cube's bottom face sits at y = -0.5
 scene.add(ground);
 
 const road = createRoad(scene);   // NEW: build the road pool once
+createTerrainPatch(scene);
 
 // 4. Game loop with delta time
 let last = performance.now();
