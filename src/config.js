@@ -18,5 +18,7 @@ export const CONFIG = {
   fovSpeedMax: 8,    // speed at which the full boost applies (matches moveSpeed for now)
 
   road: { width: 8, segmentLength: 40, segmentCount: 8, segmentsBehind: 2, y: -0.48 },
+
+  noise: { seed: 1, frequency: 0.02 },
 };
 
