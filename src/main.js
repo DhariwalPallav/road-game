@@ -3,15 +3,15 @@ import { CONFIG } from './config.js';
 import { input } from './input.js';
 import { updateCamera } from './cameraRig.js';
 import { createRoad } from './road.js';
-import { createChunk, heightAt } from './world/chunks.js';
+import { createChunkManager, heightAt } from './world/chunks.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-  60,                                      // field of view (degrees)
-  window.innerWidth / window.innerHeight,  // aspect ratio
-  0.1,                                     // near clip
-  1000                                     // far clip
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
 camera.position.set(0, 2, 6);
 camera.lookAt(0, 0, 0);
@@ -36,17 +36,14 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 scene.background = new THREE.Color(CONFIG.skyColor);
 scene.fog = new THREE.Fog(CONFIG.skyColor, CONFIG.fogNear, CONFIG.fogFar);
 
-// Old ground plane and terrain patch are removed: chunks are the ground now.
-
 const road = createRoad(scene);
+const chunkManager = createChunkManager(scene);   // NEW: replaces the fixed 3x3 grid
 
-// NEW: a (2r+1) x (2r+1) grid of terrain chunks around the origin
-const r = CONFIG.chunk.gridRadius;
-for (let cz = -r; cz <= r; cz++) {
-  for (let cx = -r; cx <= r; cx++) {
-    scene.add(createChunk(cx, cz));
-  }
-}
+// TEMPORARY debug: prints GPU geometry count and triangle count every 2 seconds
+setInterval(() => {
+  console.log('geometries:', renderer.info.memory.geometries,
+              'triangles:', renderer.info.render.triangles);
+}, 2000);
 
 // 4. Game loop with delta time
 let last = performance.now();
@@ -58,7 +55,7 @@ function frame(now) {
   cube.position.x += input.steer * CONFIG.moveSpeed * dt;
   cube.position.z -= input.throttle * CONFIG.moveSpeed * dt;
 
-  // NEW: keep the cube sitting on top of the terrain
+  chunkManager.update(cube.position.x, cube.position.z);   // NEW: stream chunks
   cube.position.y = heightAt(cube.position.x, cube.position.z) + 0.5;
 
   road.update(cube.position.z);
