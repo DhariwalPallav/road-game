@@ -23,6 +23,6 @@ export const CONFIG = {
 
   patch: { size: 100, segments: 64, heightScale: 30, x: 70, z: -60 },
 
-  chunk: { size: 64, segments: 32, heightScale: 30, viewRadius: 3 },
+  chunk: { size: 64, segments: 32, heightScale: 30, viewRadius: 3, flatShading: true },
 };
 
