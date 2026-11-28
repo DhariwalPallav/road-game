@@ -3,7 +3,7 @@ import { CONFIG } from './config.js';
 import { input } from './input.js';
 import { updateCamera } from './cameraRig.js';
 import { createRoad } from './road.js';
-import { createTerrainPatch } from './world/terrainPatch.js';
+import { createChunk, heightAt } from './world/chunks.js';
 
 // 1. Scene, camera, renderer
 const scene = new THREE.Scene();
@@ -27,7 +27,7 @@ const cube = new THREE.Mesh(
 );
 scene.add(cube);
 
-// 3. Light, sky, fog, ground
+// 3. Light, sky, fog
 const sun = new THREE.DirectionalLight(0xffffff, 3);
 sun.position.set(20, 40, 10);
 scene.add(sun);
@@ -36,35 +36,37 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 scene.background = new THREE.Color(CONFIG.skyColor);
 scene.fog = new THREE.Fog(CONFIG.skyColor, CONFIG.fogNear, CONFIG.fogFar);
 
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(500, 500),
-  new THREE.MeshStandardMaterial({ color: CONFIG.groundColor })
-);
-ground.rotation.x = -Math.PI / 2; // lay it flat
-ground.position.y = -0.5;         // the cube's bottom face sits at y = -0.5
-scene.add(ground);
+// Old ground plane and terrain patch are removed: chunks are the ground now.
 
-const road = createRoad(scene);   // NEW: build the road pool once
-createTerrainPatch(scene);
+const road = createRoad(scene);
+
+// NEW: a (2r+1) x (2r+1) grid of terrain chunks around the origin
+const r = CONFIG.chunk.gridRadius;
+for (let cz = -r; cz <= r; cz++) {
+  for (let cx = -r; cx <= r; cx++) {
+    scene.add(createChunk(cx, cz));
+  }
+}
 
 // 4. Game loop with delta time
 let last = performance.now();
 
-function frame(now) {            // 'now' is passed in by requestAnimationFrame (ms)
-  const dt = Math.min((now - last) / 1000, CONFIG.maxDt); // seconds, clamped
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, CONFIG.maxDt);
   last = now;
   input.update();
   cube.position.x += input.steer * CONFIG.moveSpeed * dt;
-  cube.position.z -= input.throttle * CONFIG.moveSpeed * dt; // -z is "forward" in Three.js
+  cube.position.z -= input.throttle * CONFIG.moveSpeed * dt;
 
-  road.update(cube.position.z);         // NEW: recycle road segments
-  ground.position.x = cube.position.x;  // NEW: ground follows the cube
-  ground.position.z = cube.position.z;  // NEW
+  // NEW: keep the cube sitting on top of the terrain
+  cube.position.y = heightAt(cube.position.x, cube.position.z) + 0.5;
+
+  road.update(cube.position.z);
 
   cube.rotation.x += CONFIG.cubeSpinSpeed * dt;
   cube.rotation.y += CONFIG.cubeSpinSpeed * dt;
 
-  const speed = Math.hypot(input.steer, input.throttle) * CONFIG.moveSpeed; // temporary
+  const speed = Math.hypot(input.steer, input.throttle) * CONFIG.moveSpeed;
   updateCamera(camera, cube, dt, speed);
 
   renderer.render(scene, camera);
